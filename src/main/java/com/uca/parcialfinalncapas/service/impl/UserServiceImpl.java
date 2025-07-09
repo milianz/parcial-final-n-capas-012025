@@ -55,4 +55,14 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> findAll() {
         return UserMapper.toDTOList(userRepository.findAll());
     }
+
+    @Override
+    public List<UserResponse> findByRole(String role) {
+        return List.of();
+    }
+
+    @Override
+    public boolean isCurrentUser(Long userId, String currentUserEmail) {
+        return false;
+    }
 }

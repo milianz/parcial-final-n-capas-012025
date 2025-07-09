@@ -96,4 +96,14 @@ public class TicketServiceImpl implements TicketService {
     public List<TicketResponseList> getAllTickets() {
         return TicketMapper.toDTOList(ticketRepository.findAll());
     }
+
+    @Override
+    public List<TicketResponseList> getTicketsByUser(String userEmail) {
+        return List.of();
+    }
+
+    @Override
+    public boolean isTicketOwner(Long ticketId, String userEmail) {
+        return false;
+    }
 }
