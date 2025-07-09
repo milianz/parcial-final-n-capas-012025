@@ -34,17 +34,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(
-                                        "/auth/**",
-                                        "/v2/api-docs",
-                                        "/v3/api-docs",
-                                        "/v3/api-docs/**",
-                                        "/swagger-resources",
-                                        "/swagger-resources/**",
-                                        "/configuration/ui",
-                                        "/configuration/security",
-                                        "/swagger-ui/**",
-                                        "/webjars/**",
-                                        "/swagger-ui.html"
+                                        "/auth/login",      // Login no requiere autenticación
+                                        "/auth/register"    // Registro no requiere autenticación
                                 ).permitAll()
                                 .requestMatchers("/api/users/**").hasAnyRole("USER", "TECH")
                                 .requestMatchers("/api/tickets/**").hasAnyRole("USER", "TECH")
