@@ -29,9 +29,17 @@ public class TicketController {
     @PreAuthorize("hasRole('TECH')")
     public ResponseEntity<GeneralResponse> getAllTickets() {
         List<TicketResponseList> tickets = ticketService.getAllTickets();
-        return ResponseBuilderUtil.buildResponse("Tickets obtenidos correctamente",
-                tickets.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK,
-                tickets);
+        try {
+            return ResponseBuilderUtil.buildResponse("Tickets obtenidos correctamente",
+                    tickets.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK,
+                    tickets);
+        } catch (BadTicketRequestException e) {
+            return ResponseBuilderUtil.buildResponse(
+                    "Error al obtener los tickets: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST,
+                    null
+            );
+        }
     }
 
     @GetMapping("/{id}")
@@ -60,9 +68,17 @@ public class TicketController {
     public ResponseEntity<GeneralResponse> getMyTickets(Authentication authentication) {
         String userEmail = authentication.getName();
         List<TicketResponseList> tickets = ticketService.getTicketsByUser(userEmail);
-        return ResponseBuilderUtil.buildResponse("Mis tickets obtenidos correctamente",
-                tickets.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK,
-                tickets);
+        try {
+            return ResponseBuilderUtil.buildResponse("Mis tickets obtenidos correctamente",
+                    tickets.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK,
+                    tickets);
+        } catch (BadTicketRequestException e) {
+            return ResponseBuilderUtil.buildResponse(
+                    "Error al obtener mis tickets: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST,
+                    null
+            );
+        }
     }
 
     @PostMapping
@@ -74,14 +90,30 @@ public class TicketController {
         ticket.setCorreoUsuario(userEmail);
 
         TicketResponse createdTicket = ticketService.createTicket(ticket);
-        return ResponseBuilderUtil.buildResponse("Ticket creado correctamente", HttpStatus.CREATED, createdTicket);
+        try {
+            return ResponseBuilderUtil.buildResponse("Ticket creado correctamente", HttpStatus.CREATED, createdTicket);
+        } catch (BadTicketRequestException e) {
+            return ResponseBuilderUtil.buildResponse(
+                    "Error al crear el ticket: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST,
+                    null
+            );
+        }
     }
 
     @PutMapping
     @PreAuthorize("hasRole('TECH')")
     public ResponseEntity<GeneralResponse> updateTicket(@Valid @RequestBody TicketUpdateRequest ticket) {
         TicketResponse updatedTicket = ticketService.updateTicket(ticket);
-        return ResponseBuilderUtil.buildResponse("Ticket actualizado correctamente", HttpStatus.OK, updatedTicket);
+        try {
+            return ResponseBuilderUtil.buildResponse("Ticket actualizado correctamente", HttpStatus.OK, updatedTicket);
+        } catch (BadTicketRequestException e) {
+            return ResponseBuilderUtil.buildResponse(
+                    "Error al actualizar el ticket: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST,
+                    null
+            );
+        }
     }
 
     @DeleteMapping("/{id}")

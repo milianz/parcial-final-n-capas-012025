@@ -22,29 +22,54 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<GeneralResponse> register(@Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.register(request);
-        return ResponseBuilderUtil.buildResponse(
-                "Usuario registrado exitosamente",
-                HttpStatus.CREATED,
-                response
-        );
+        try {
+            return ResponseBuilderUtil.buildResponse(
+                    "Usuario registrado exitosamente",
+                    HttpStatus.CREATED,
+                    response
+            );
+        } catch (Exception e) {
+            return ResponseBuilderUtil.buildResponse(
+                    "Error al registrar el usuario: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST,
+                    null
+            );
+        }
+
     }
 
     @PostMapping("/login")
     public ResponseEntity<GeneralResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
-        return ResponseBuilderUtil.buildResponse(
-                "Login exitoso",
-                HttpStatus.OK,
-                response
-        );
+        try {
+            return ResponseBuilderUtil.buildResponse(
+                    "Login exitoso",
+                    HttpStatus.OK,
+                    response
+            );
+        } catch (Exception e) {
+            return ResponseBuilderUtil.buildResponse(
+                    "Error al iniciar sesión: " + e.getMessage(),
+                    HttpStatus.UNAUTHORIZED,
+                    null
+            );
+        }
     }
 
     @GetMapping("/test")
     public ResponseEntity<GeneralResponse> test() {
-        return ResponseBuilderUtil.buildResponse(
-                "Endpoint de prueba funcionando",
-                HttpStatus.OK,
-                "¡La autenticación está funcionando!"
-        );
+        try {
+            return ResponseBuilderUtil.buildResponse(
+                    "Endpoint de prueba funcionando",
+                    HttpStatus.OK,
+                    "¡La autenticación está funcionando!"
+            );
+        } catch (Exception e) {
+            return ResponseBuilderUtil.buildResponse(
+                    "Error en el endpoint de prueba: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    null
+            );
+        }
     }
 }
