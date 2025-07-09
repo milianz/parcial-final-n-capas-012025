@@ -10,26 +10,33 @@ import java.time.LocalDate;
 
 // Clase para construir respuestas de error y éxito de manera uniforme
 public class ResponseBuilderUtil {
-    // Metodo para construir una respuesta de error
+
+    // Método para construir una respuesta de error
     public static ResponseEntity<ErrorResponse> buildErrorResponse(Exception e, HttpStatus status, Object data) {
         String uri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().getPath();
-        return ResponseEntity.status(status).body(ErrorResponse.builder()
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
                 .message(data)
                 .status(status.value())
                 .time(LocalDate.now())
                 .uri(uri)
-                .build());
+                .build();
+
+        return ResponseEntity.status(status).body(errorResponse);
     }
 
-    // Metodo para construir una respuesta general de éxito
+    // Método para construir una respuesta general de éxito
     public static ResponseEntity<GeneralResponse> buildResponse(String message, HttpStatus status, Object data) {
         String uri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().getPath();
-        return ResponseEntity.status(status).body(GeneralResponse.builder()
+
+        GeneralResponse generalResponse = GeneralResponse.builder()
                 .message(message)
                 .status(status.value())
                 .data(data)
                 .uri(uri)
                 .time(LocalDate.now())
-                .build());
+                .build();
+
+        return ResponseEntity.status(status).body(generalResponse);
     }
 }

@@ -15,22 +15,22 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<com.uca.parcialfinalncapas.dto.response.ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseBuilderUtil.buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(BadTicketRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadTicketRequestException(BadTicketRequestException e) {
+    public ResponseEntity<com.uca.parcialfinalncapas.dto.response.ErrorResponse> handleBadTicketRequestException(BadTicketRequestException e) {
         return ResponseBuilderUtil.buildErrorResponse(e, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
+    public ResponseEntity<com.uca.parcialfinalncapas.dto.response.ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseBuilderUtil.buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler(TicketNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTicketNotFoundException(TicketNotFoundException e) {
+    public ResponseEntity<com.uca.parcialfinalncapas.dto.response.ErrorResponse> handleTicketNotFoundException(TicketNotFoundException e) {
         return ResponseBuilderUtil.buildErrorResponse(e, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
