@@ -3,7 +3,6 @@ package com.uca.parcialfinalncapas.service.impl;
 import com.uca.parcialfinalncapas.dto.request.UserCreateRequest;
 import com.uca.parcialfinalncapas.dto.request.UserUpdateRequest;
 import com.uca.parcialfinalncapas.dto.response.UserResponse;
-import com.uca.parcialfinalncapas.entities.User;
 import com.uca.parcialfinalncapas.exceptions.UserNotFoundException;
 import com.uca.parcialfinalncapas.repository.UserRepository;
 import com.uca.parcialfinalncapas.service.UserService;
@@ -26,7 +25,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse save(UserCreateRequest user) {
-
         if (userRepository.findByCorreo(user.getCorreo()).isPresent()) {
             throw new UserNotFoundException("Ya existe un usuario con el correo: " + user.getCorreo());
         }
@@ -58,11 +56,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> findByRole(String role) {
-        return List.of();
+        return userRepository.findAll().stream()
+                .filter(user -> user.getNombreRol().equals(role))
+                .map(UserMapper::toDTO)
+                .toList();
     }
 
     @Override
     public boolean isCurrentUser(Long userId, String currentUserEmail) {
-        return false;
+        try {
+            var currentUser = userRepository.findByCorreo(currentUserEmail)
+                    .orElse(null);
+
+            if (currentUser == null) {
+                return false;
+            }
+
+            return currentUser.getId().equals(userId);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

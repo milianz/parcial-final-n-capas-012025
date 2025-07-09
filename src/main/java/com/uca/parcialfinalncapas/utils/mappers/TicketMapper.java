@@ -38,7 +38,7 @@ public class TicketMapper {
                         : ticketOriginal.getEstado())
                 .tecnicoAsignadoId(tecnicoAsignadoId != null ? tecnicoAsignadoId : ticketOriginal.getTecnicoAsignadoId())
                 .usuarioId(ticketOriginal.getUsuarioId())
-                .fecha(LocalDateTime.now())
+                .fecha(ticketOriginal.getFecha()) // ← CAMBIO 1: Mantener fecha original en lugar de LocalDateTime.now()
                 .build();
     }
 
@@ -48,6 +48,7 @@ public class TicketMapper {
                 .titulo(ticket.getTitulo())
                 .descripcion(ticket.getDescripcion())
                 .estado(ticket.getEstado())
+                .fecha(ticket.getFecha().toLocalDate()) // ← CAMBIO 2: Agregar fecha
                 .correoSoporte(correoSoporte)
                 .correoSolicitante(correoUsuario)
                 .build();
@@ -60,6 +61,7 @@ public class TicketMapper {
                         .titulo(ticket.getTitulo())
                         .descripcion(ticket.getDescripcion())
                         .estado(ticket.getEstado())
+                        .fecha(ticket.getFecha().toLocalDate().toString()) // ← CAMBIO 3: Agregar fecha
                         .solicitanteId(ticket.getUsuarioId())
                         .soporteId(ticket.getTecnicoAsignadoId())
                         .build())

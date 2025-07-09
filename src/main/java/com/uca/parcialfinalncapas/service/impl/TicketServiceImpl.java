@@ -5,7 +5,6 @@ import com.uca.parcialfinalncapas.dto.request.TicketUpdateRequest;
 import com.uca.parcialfinalncapas.dto.response.TicketResponse;
 import com.uca.parcialfinalncapas.dto.response.TicketResponseList;
 import com.uca.parcialfinalncapas.entities.Ticket;
-import com.uca.parcialfinalncapas.entities.User;
 import com.uca.parcialfinalncapas.exceptions.BadTicketRequestException;
 import com.uca.parcialfinalncapas.exceptions.TicketNotFoundException;
 import com.uca.parcialfinalncapas.exceptions.UserNotFoundException;
@@ -80,14 +79,14 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketResponse getTicketById(Long id) {
-    var ticketExistente = ticketRepository.findById(id)
-            .orElseThrow(() -> new TicketNotFoundException("Ticket no encontrado con ID: " + id));
+        var ticketExistente = ticketRepository.findById(id)
+                .orElseThrow(() -> new TicketNotFoundException("Ticket no encontrado con ID: " + id));
 
-    var usuarioSolicitante = userRepository.findById(ticketExistente.getUsuarioId())
-            .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+        var usuarioSolicitante = userRepository.findById(ticketExistente.getUsuarioId())
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
-    var usuarioSoporte = userRepository.findById(ticketExistente.getTecnicoAsignadoId())
-            .orElseThrow(() -> new UserNotFoundException("Usuario asignado no encontrado"));
+        var usuarioSoporte = userRepository.findById(ticketExistente.getTecnicoAsignadoId())
+                .orElseThrow(() -> new UserNotFoundException("Usuario asignado no encontrado"));
 
         return TicketMapper.toDTO(ticketExistente, usuarioSolicitante.getCorreo(), usuarioSoporte.getCorreo());
     }
@@ -99,11 +98,48 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<TicketResponseList> getTicketsByUser(String userEmail) {
-        return List.of();
+        // Buscar el usuario por email
+        var usuario = userRepository.findByCorreo(userEmail)
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con correo: " + userEmail));
+
+        // Buscar todos los tickets y filtrar por usuario
+        return ticketRepository.findAll().stream()
+                .filter(ticket -> ticket.getUsuarioId().equals(usuario.getId()))
+                .map(ticket -> TicketResponseList.builder()
+                        .idTicket(ticket.getId())
+                        .titulo(ticket.getTitulo())
+                        .descripcion(ticket.getDescripcion())
+                        .estado(ticket.getEstado())
+                        .fecha(ticket.getFecha().toLocalDate().toString())
+                        .solicitanteId(ticket.getUsuarioId())
+                        .soporteId(ticket.getTecnicoAsignadoId())
+                        .build())
+                .toList();
     }
 
     @Override
     public boolean isTicketOwner(Long ticketId, String userEmail) {
-        return false;
+        try {
+            // Buscar el ticket
+            var ticket = ticketRepository.findById(ticketId)
+                    .orElse(null);
+
+            if (ticket == null) {
+                return false;
+            }
+
+            // Buscar el usuario
+            var usuario = userRepository.findByCorreo(userEmail)
+                    .orElse(null);
+
+            if (usuario == null) {
+                return false;
+            }
+
+            // Verificar si el usuario es propietario del ticket
+            return ticket.getUsuarioId().equals(usuario.getId());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
