@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # Base de datos PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: support-db
@@ -9,12 +6,10 @@ services:
       POSTGRES_DB: supportdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - support-network
     restart: unless-stopped
@@ -24,34 +19,21 @@ services:
       timeout: 5s
       retries: 5
 
-  # Aplicación Spring Boot
   app:
     build: 
       context: .
       dockerfile: Dockerfile
     container_name: support-app
     environment:
-      # Configuración de base de datos
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/supportdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: admin
-      
-      # Configuración JPA
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
-      
-      # Configuración JWT
       APPLICATION_SECURITY_JWT_SECRET_KEY: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       APPLICATION_SECURITY_JWT_EXPIRATION: 86400000
-      
-      # Configuración del servidor
       SERVER_PORT: 8080
       SPRING_PROFILES_ACTIVE: docker
-      
-      # Configuración de logs
-      LOGGING_LEVEL_COM_UCA_PARCIALFINALNCAPAS: INFO
-      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
     ports:
       - "8080:8080"
     networks:
@@ -60,33 +42,11 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/test"\]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
 
-  # Adminer para gestión de BD (opcional)
-  adminer:
-    image: adminer:latest
-    container_name: support-adminer
-    environment:
-      ADMINER_DEFAULT_SERVER: postgres
-    ports:
-      - "8081:8080"
-    networks:
-      - support-network
-    depends_on:
-      - postgres
-    restart: unless-stopped
-
-# Volúmenes para persistencia de datos
 volumes:
   postgres_data:
     driver: local
 
-# Red personalizada
 networks:
   support-network:
     driver: bridge
